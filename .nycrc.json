@@ -5,7 +5,8 @@
     "src/**/*.js"
   ],
   "exclude": [
-    "tests/"
+    "tests/",
+    "src/utils/"
   ],
   "branches": 80,
   "lines": 80,
