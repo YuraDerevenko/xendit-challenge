@@ -1,0 +1,42 @@
+config:
+  target: "http://localhost:8010"
+  environments:
+    load:
+      phases:
+        - name: "Warming up the application"
+          duration: 5
+          arrivalRate: 1
+        - name: "Loading"
+          duration: 30
+          arrivalRate: 120
+    processor: "../processors/generate.js"
+    ensure:
+      conditions:
+        - expression: "http.response_time.p99 <= 50 and http.request_rate >= 100"
+
+scenarios:
+  - name: "create ride"
+    flow:
+      - post:
+          url: "/rides"
+          json:
+            start_lat: 90
+            start_long: 180
+            end_lat: 90
+            end_long: 90
+            rider_name: "test"
+            driver_name: "test"
+            driver_vehicle: "test"
+          capture:
+            - json: "$.id"
+              as: id
+  - name: "get rides"
+    function: "generateRides"
+    flow:    
+      - get:
+          url: "/rides"
+  - name: "get ride"
+    function: "generateRides"
+    flow:     
+      - get:
+          url: "/rides/{{ id }}"
