@@ -10,6 +10,9 @@
     "test": "eslint . && nyc mocha tests",
     "start": "node index.js"
   },
+  "pre-push": [
+    "test"
+  ],
   "keywords": [
     "Xendit"
   ],
