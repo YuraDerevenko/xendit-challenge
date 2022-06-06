@@ -41,7 +41,8 @@ class RideRepository {
   async getById(id) {
     return new Promise((resolve, reject) =>
       this.db.all(
-        `SELECT * FROM Rides WHERE rideID='${id}'`,
+        `SELECT * FROM Rides WHERE rideID=?`,
+        [id],
         function (err, rows) {
           if (err) return reject(err);
 

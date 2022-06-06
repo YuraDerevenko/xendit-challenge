@@ -105,8 +105,10 @@ describe("Rides repository tests", () => {
   it("success get by id", async function () {
     const id = 1;
     const db = {
-      all: function (sql, cb) {
-        expect(sql).eql(`SELECT * FROM Rides WHERE rideID='${id}'`);
+      all: function (sql, values, cb) {
+        expect(sql).not.eql(`SELECT * FROM Rides WHERE rideID='${id}'`);
+        expect(sql).eql(`SELECT * FROM Rides WHERE rideID=?`);
+        expect(values).eql([id]);
         cb(null, [{ rideID: 1 }]);
       },
     };
@@ -120,8 +122,9 @@ describe("Rides repository tests", () => {
   it("fails get by id", async function () {
     const id = 1;
     const db = {
-      all: function (sql, cb) {
-        expect(sql).eql(`SELECT * FROM Rides WHERE rideID='${id}'`);
+      all: function (sql, values, cb) {
+        expect(sql).eql(`SELECT * FROM Rides WHERE rideID=?`);
+        expect(values).eql([id]);
         cb("FATAL");
       },
     };
