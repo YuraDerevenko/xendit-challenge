@@ -1,0 +1,429 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Xendit Coding Exercise",
+    "description": "Xendit Coding Exercise challenge",
+    "version": "2022-06-06"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8010"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Checks that server is up and running",
+        "tags": [
+          "non-functional"
+        ],
+        "responses": {
+          "200": {
+            "description": "success response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/Healthy"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rides": {
+      "post": {
+        "summary": "Endpoint to create single ride",
+        "description": "Create a new Ride with full validation and return  it",
+        "tags": [
+          "rides-api"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRideInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ride"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/StartLatLongErrorModel"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EndLatLongErrorModel"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RiderNameErrorModel"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DriverNameErrorModel"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DriverVehicleNameErrorModel"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Endpoint to retrieve rides list",
+        "description": "Get list of all existed rides",
+        "tags": [
+          "rides-api"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ride"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RidesNotFoundErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rides/{id}": {
+      "get": {
+        "summary": "Endpoint to retrieve ride by id",
+        "description": "Get ride by given id",
+        "tags": [
+          "rides-api"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ride id",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ride"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RidesNotFoundErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateRideInput": {
+        "title": "CreateRideInput",
+        "description": "Expected request body to create new Ride",
+        "required": [
+          "start_lat",
+          "start_long",
+          "end_lat",
+          "end_long",
+          "rider_name",
+          "driver_name",
+          "driver_vehicle"
+        ],
+        "type": "object",
+        "properties": {
+          "start_lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "start_long": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "end_lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "end_long": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "rider_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "driver_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "driver_vehicle": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "Ride": {
+        "title": "RideModel",
+        "description": "RideModel",
+        "type": "object",
+        "required": [
+          "rideID",
+          "created",
+          "startLat",
+          "startLong",
+          "endLat",
+          "endLong",
+          "riderName",
+          "driverName",
+          "driverVehicle"
+        ],
+        "properties": {
+          "rideID": {
+            "type": "integer"
+          },
+          "startLat": {
+            "type": "number"
+          },
+          "startLong": {
+            "type": "number"
+          },
+          "endLat": {
+            "type": "number"
+          },
+          "endLong": {
+            "type": "number"
+          },
+          "riderName": {
+            "type": "string"
+          },
+          "driverName": {
+            "type": "string"
+          },
+          "driverVehicle": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string"
+          }
+        }
+      },
+      "StartLatLongErrorModel": {
+        "title": "StartLatLongErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively"
+          }
+        }
+      },
+      "EndLatLongErrorModel": {
+        "title": "EndLatLongErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "End latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively"
+          }
+        }
+      },
+      "RiderNameErrorModel": {
+        "title": "RiderNameErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Rider name must be a non empty string"
+          }
+        }
+      },
+      "DriverNameErrorModel": {
+        "title": "DriverNameErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Rider name must be a non empty string"
+          }
+        }
+      },
+      "DriverVehicleNameErrorModel": {
+        "title": "DriverVehicleNameErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Rider name must be a non empty string"
+          }
+        }
+      },
+      "RidesNotFoundErrorModel": {
+        "title": "RidesNotFoundErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "RIDES_NOT_FOUND_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Could not find any rides"
+          }
+        }
+      },
+      "ServerErrorModel": {
+        "title": "GeneralErrorModel",
+        "required": [
+          "error_code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error_code": {
+            "type": "string",
+            "example": "SERVER_ERROR"
+          },
+          "message": {
+            "type": "string",
+            "example": "Unknown error"
+          }
+        }
+      },
+      "Healthy": {
+        "title": "Healthy",
+        "type": "string",
+        "example": "Healthy"
+      }
+    }
+  }
+}
