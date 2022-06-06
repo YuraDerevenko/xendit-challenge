@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "eslint . && nyc mocha tests",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test:load": "artillery run --environment load load_test.yml -o ./report.json" 
   },
   "pre-push": [
     "test"
@@ -27,6 +28,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
+    "artillery": "^1.6.0",
     "chai": "^3.0.0",
     "eslint": "^7.32.0",
     "faker": "^4.1.0",
